@@ -10,12 +10,20 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "jest --ci --runInBand",
-    "build": "echo \"no build step\"",
-    "docs:build": "jsdoc -c jsdoc.json -d docs"
+    "test:coverage": "jest --ci --runInBand --coverage",
+    "test:watch": "jest --watch",
+    "test:verbose": "jest --ci --runInBand --verbose",
+    "build": "echo \"Build step not required for Node.js project\" && exit 0",
+    "format": "prettier --write \"**/*.{js,json,md}\"",
+    "format:check": "prettier --check \"**/*.{js,json,md}\"",
+    "docs:build": "jsdoc -c jsdoc.json -d docs",
+    "validate": "npm run lint && npm run format:check && npm run test",
+    "security:audit": "npm audit --audit-level=moderate",
+    "security:fix": "npm audit fix"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
-    "request": "^2.88.2"
+    "got": "^11.8.6"
   },
   "repository": {
     "type": "git",
@@ -23,7 +31,10 @@
   },
   "keywords": [
     "Heavens Above",
-    "spider"
+    "spider",
+    "scraper",
+    "astronomy",
+    "satellites"
   ],
   "author": "Mimi <stevenjoezhang@gmail.com> (https://zhangshuqiao.org)",
   "license": "GPL-3.0-or-later",
@@ -32,24 +43,72 @@
   },
   "homepage": "https://github.com/PKUPI/heavens-above#readme",
   "engines": {
-    "node": ">=12.10.0"
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.38.0",
     "eslint": "^9.38.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-jest": "^28.8.0",
     "jest": "^30.2.0",
     "jest-junit": "^16.0.0",
-    "jsdoc": "^4.0.5"
+    "jsdoc": "^4.0.5",
+    "prettier": "^3.3.3"
   },
   "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "**/*.js",
+      "!node_modules/**",
+      "!docs/**",
+      "!coverage/**",
+      "!jest.config.js",
+      "!eslint.config.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 50,
+        "functions": 50,
+        "lines": 50,
+        "statements": 50
+      }
+    },
+    "coverageReporters": [
+      "text",
+      "text-summary",
+      "html",
+      "lcov",
+      "json"
+    ],
     "reporters": [
       "default",
       [
         "jest-junit",
         {
           "outputDirectory": "./test-reports",
-          "outputName": "junit.xml"
+          "outputName": "junit.xml",
+          "classNameTemplate": "{classname}",
+          "titleTemplate": "{title}",
+          "ancestorSeparator": " › ",
+          "usePathForSuiteName": true
         }
       ]
-    ]
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.js",
+      "**/?(*.)+(spec|test).js"
+    ],
+    "verbose": true
+  },
+  "prettier": {
+    "semi": true,
+    "trailingComma": "es5",
+    "singleQuote": true,
+    "printWidth": 100,
+    "tabWidth": 2,
+    "useTabs": false,
+    "arrowParens": "avoid",
+    "endOfLine": "lf"
   }
 }
