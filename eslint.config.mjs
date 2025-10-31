@@ -8,6 +8,7 @@ export default [
       "dist",
       "__tests__/**",
       "docs/scripts/prettify/**", // Ignore all vendor scripts
+      "docs/scripts/linenumber.js",
     ],
   },
   js.configs.recommended,
