@@ -51,5 +51,8 @@ jobs:
 
       - name: Link and deploy using Railway CLI
         run: |
-          railway link --project 77ff4963-06bf-4864-998b-14c211c58351 --token $RAILWAY_TOKEN
-          railway up  --token $RAILWAY_TOKEN
+          # Link your workflow runner to the Railway project using the project ID
+          railway link --project 77ff4963-06bf-4864-998b-14c211c58351
+          
+          # Deploy the project (RAILWAY_TOKEN is used automatically)
+          railway up
