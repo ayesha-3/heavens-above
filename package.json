@@ -24,8 +24,8 @@
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
-    "got": "^11.8.6",
-    "express": "^4.21.0"
+    "express": "^4.21.0",
+    "got": "^11.8.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.38.0",
@@ -36,7 +36,8 @@
     "jest-junit": "^16.0.0",
     "jsdoc": "^4.0.5",
     "nodemon": "^3.1.7",
-    "prettier": "^3.3.3"
+    "prettier": "^3.3.3",
+    "vite": "^7.1.12"
   },
   "repository": {
     "type": "git",
@@ -80,7 +81,13 @@
         "statements": 0
       }
     },
-    "coverageReporters": ["text", "text-summary", "html", "lcov", "json"],
+    "coverageReporters": [
+      "text",
+      "text-summary",
+      "html",
+      "lcov",
+      "json"
+    ],
     "reporters": [
       "default",
       [
@@ -95,7 +102,10 @@
         }
       ]
     ],
-    "testMatch": ["**/__tests__/**/*.js", "**/?(*.)+(spec|test).js"],
+    "testMatch": [
+      "**/__tests__/**/*.js",
+      "**/?(*.)+(spec|test).js"
+    ],
     "verbose": true
   },
   "prettier": {
