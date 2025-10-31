@@ -49,10 +49,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Authenticate with Railway
-        run: railway login --token $RAILWAY_TOKEN
-
       - name: Link and deploy using Railway CLI
         run: |
+          # The Railway CLI automatically authenticates using RAILWAY_TOKEN
           railway link --project 77ff4963-06bf-4864-998b-14c211c58351
           railway up
