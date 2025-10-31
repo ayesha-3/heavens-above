@@ -14,12 +14,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # Fetch full history so commits can be listed properly
+          fetch-depth: 0
 
       - name: Generate release notes
         id: notes
         uses: actions/github-script@v7
         with:
           script: |
+            const fs = require("fs");
+
             const { data: release } = await github.rest.repos.getReleaseByTag({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -32,23 +37,32 @@ jobs:
               sha: context.payload.release.target_commitish
             });
 
-            let notes = `##  Release Notes for ${release.tag_name}\n\n`;
-            notes += `###  New Features / Changes:\n`;
+            let notes = `## Release Notes for ${release.tag_name}\n\n`;
+            notes += `### New Features / Changes:\n`;
+
             commits.slice(0, 10).forEach(c => {
               notes += `- ${c.commit.message}\n`;
             });
+
             notes += `\nGenerated automatically by GitHub Actions.`;
 
-            require("fs").writeFileSync("RELEASE_NOTES.md", notes);
+            fs.writeFileSync("RELEASE_NOTES.md", notes);
             core.setOutput("notes", notes);
 
-      - name: Commit and push notes
+      - name: Commit and push release notes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add RELEASE_NOTES.md
-          git commit -m " Add release notes for ${{ github.event.release.tag_name }}"
-          git push
+          
+          # Only commit if there are actual changes
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Add release notes for ${{ github.event.release.tag_name }}"
+            # Push explicitly to main to avoid detached HEAD issues
+            git push origin HEAD:main
+          fi
 
       - name: Upload release notes as artifact
         uses: actions/upload-artifact@v4
