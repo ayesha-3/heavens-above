@@ -51,5 +51,5 @@ jobs:
 
       - name: Link and deploy using Railway CLI
         run: |
-          railway link --project 77ff4963-06bf-4864-998b-14c211c58351
-          railway up
+          railway link --project 77ff4963-06bf-4864-998b-14c211c58351 --token $RAILWAY_TOKEN
+          railway up  --token $RAILWAY_TOKEN
