@@ -4,12 +4,15 @@ import globals from 'globals';
 
 export default [
   {
-    ignores: ["node_modules", "dist", "docs/scripts/prettify/**"],
+    ignores: ["node_modules", "dist",  "__tests__/**"],
   },
   js.configs.recommended,
   {
     languageOptions: {
-      globals: globals.node,
+      globals: {
+      globals.node,
+      globals.jest,
+      },
       ecmaVersion: "latest",
       sourceType: "module",
     },

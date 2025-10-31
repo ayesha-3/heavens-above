@@ -1,4 +1,6 @@
 const crypto = require('crypto');
+const options = {};
+const current = getCurrentSatelliteData();
 
 function getTimestamp(time) {
 	const arr = time.split(":");
