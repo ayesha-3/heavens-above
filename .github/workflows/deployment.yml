@@ -49,5 +49,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Deploy using Railway CLI
-        run: railway up
+      - name: Link and deploy using Railway CLI
+        run: |
+          railway link --project 77ff4963-06bf-4864-998b-14c211c58351
+          railway up
