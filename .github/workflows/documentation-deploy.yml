@@ -1,0 +1,52 @@
+name: Documentation Deployment
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/**'        # Run only when files in /docs change
+      - '.github/workflows/documentation-deploy.yml'
+  workflow_dispatch:      # Allow manual triggering
+
+permissions:
+  contents: write         # Needed to push to gh-pages branch
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy Documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Node.js (for Docusaurus or other JS-based generators)
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # Step 4: Build documentation site
+        # If you use MkDocs, replace this with: `mkdocs build`
+        # If you use Docusaurus, this is usually: `npm run build`
+      - name: Build documentation
+        run: npm run docs:build
+
+      # Step 5: Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build   # Adjust to your docs output directory
+          publish_branch: gh-pages
+
+      # Step 6 (Optional): Notify team or log deployment success
+      - name: Notify deployment success
+        run: echo "Documentation deployed successfully at https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
