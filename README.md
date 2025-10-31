@@ -1,7 +1,7 @@
 # Heavens Above
 
 爬取 Heavens Above 网站，获取卫星过境等信息。基于 Node.js，需使用 `npm` 安装依赖。  
-Scripts for scraping the Heavens Above website. It's based on Node.js. You may need to install some dependency packages using npm.
+Scripts for scraping the Heavens Above website. It's based on Node.js. You may need to install some dependency packages using npm. My version
 
 **警告：不支持 IE。**  
 **WARNING: DO NOT SUPPORT IE.**
