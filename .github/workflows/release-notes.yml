@@ -5,43 +5,43 @@ on:
     types: [published]
 
 jobs:
-  build:
+  generate:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout the repo fully (important for pushing)
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Important for pushing commits
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Generate release notes
+      # 2️⃣ Generate a new RELEASE_NOTES.md file
+      - name: Generate release notes file
         run: |
           echo "## Release Notes for ${GITHUB_REF_NAME}" > RELEASE_NOTES.md
           echo "" >> RELEASE_NOTES.md
           echo "- Added new features and bug fixes." >> RELEASE_NOTES.md
           echo "- Version: ${GITHUB_REF_NAME}" >> RELEASE_NOTES.md
 
+      # 3️⃣ Commit and push the notes to main branch
       - name: Commit and push release notes to main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Configure git identity
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Store the generated file temporarily
-          cp RELEASE_NOTES.md /tmp/RELEASE_NOTES.md
+          # Determine default branch dynamically (main/master/etc.)
+          DEFAULT_BRANCH=$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')
+          echo "Default branch is $DEFAULT_BRANCH"
 
-          # Switch to main branch (not the release tag)
-          git fetch origin main
-          git checkout main
+          # Switch to that branch
+          git checkout $DEFAULT_BRANCH
 
-          # Bring the generated release notes into main
-          cp /tmp/RELEASE_NOTES.md .
+          # Copy generated notes from tag workspace
+          cp -f RELEASE_NOTES.md RELEASE_NOTES.md
 
           git add RELEASE_NOTES.md
           git commit -m "Add release notes for ${GITHUB_REF_NAME}" || echo "No changes to commit"
-          git push origin main
+          git push origin $DEFAULT_BRANCH
