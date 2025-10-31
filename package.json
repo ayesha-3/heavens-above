@@ -14,7 +14,7 @@
     "test:coverage": "jest --ci --runInBand --coverage",
     "test:watch": "jest --watch",
     "test:verbose": "jest --ci --runInBand --verbose",
-    "build": "react-scripts build",
+    "build": "vite build",
     "format": "prettier --write \"**/*.{js,json,md}\"",
     "format:check": "prettier --check \"**/*.{js,json,md}\"",
     "docs:build": "jsdoc -c jsdoc.json -d docs",
