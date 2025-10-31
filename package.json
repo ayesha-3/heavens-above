@@ -2,7 +2,6 @@
   "name": "heavens-above",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
   "description": "Node.js web app and scripts for scraping and displaying data from Heavens Above.",
   "main": "server.js",
   "scripts": {

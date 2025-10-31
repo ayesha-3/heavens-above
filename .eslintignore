@@ -1,0 +1,5 @@
+node_modules
+IridiumFlares
+satellite*
+*.json
+*.html
