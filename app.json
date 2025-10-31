@@ -1,0 +1,31 @@
+{
+  "name": "heavens-above",
+  "description": "Astronomy data scraping application",
+  "repository": "https://github.com/PKUPI/heavens-above",
+  "keywords": ["nodejs", "astronomy", "scraper"],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "env": {
+    "NODE_ENV": {
+      "description": "Node environment",
+      "value": "production"
+    },
+    "NPM_CONFIG_PRODUCTION": {
+      "description": "Install only production dependencies",
+      "value": "true"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "addons": [],
+  "scripts": {
+    "postdeploy": "echo 'Deployment completed successfully'"
+  }
+}

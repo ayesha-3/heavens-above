@@ -1,23 +1,37 @@
-import js from "@eslint/js";
+import js from '@eslint/js';
+import prettier from 'eslint-config-prettier';
+import jest from 'eslint-plugin-jest';
 
 export default [
   js.configs.recommended,
+  prettier,
   {
-    files: ["**/*.js"],
+    files: ['**/*.js'],
     languageOptions: {
-      ecmaVersion: 2021,
-      sourceType: "script", // CommonJS uses "script", not "module"
+      ecmaVersion: 2022,
+      sourceType: 'module',
       globals: {
-        require: "readonly",
-        module: "readonly",
-        exports: "readonly",
-        __dirname: "readonly",
-        console: "readonly",
-        process: "readonly",
+        console: 'readonly',
+        process: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
       },
     },
     rules: {
-      // Add or adjust your rules here
+      'no-console': 'off',
+      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    },
+  },
+  {
+    files: ['**/*.test.js', '**/*.spec.js'],
+    plugins: { jest },
+    languageOptions: {
+      globals: {
+        ...jest.environments.globals.globals,
+      },
+    },
+    rules: {
+      ...jest.configs.recommended.rules,
     },
   },
 ];
