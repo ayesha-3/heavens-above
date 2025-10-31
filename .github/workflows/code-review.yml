@@ -1,0 +1,50 @@
+name: Code Review Workflow
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  code-review:
+    name: Automated Code Review
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Node.js (adjust if your project uses another language)
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # Step 4: Run linting to check coding standards
+      - name: Lint code
+        run: npm run lint || echo "Lint warnings found"
+
+      # Step 5: Run static analysis for code quality (optional)
+      - name: Run ESLint with annotations
+        uses: reviewdog/action-eslint@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          eslint_flags: '--max-warnings=0'
+
+      # Step 6: Run security scan using npm audit
+      - name: Run security scan
+        run: npm audit --audit-level=moderate
+
+      # Step 7: (Optional) Use CodeQL for deep code vulnerability scanning
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
