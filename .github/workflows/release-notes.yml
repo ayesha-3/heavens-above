@@ -12,28 +12,31 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0    # Important: fetch full history for pushing commits
+          fetch-depth: 0  # Fetch full history for pushing commits
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Generate release notes
+      - name: Generate release notes file
         run: |
           echo "## Release Notes for ${GITHUB_REF_NAME}" > RELEASE_NOTES.md
           echo "" >> RELEASE_NOTES.md
           echo "- Added new features and bug fixes." >> RELEASE_NOTES.md
           echo "- Version: ${GITHUB_REF_NAME}" >> RELEASE_NOTES.md
 
-      - name: Commit and push release notes
+      - name: Commit and push release notes to main
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Switch to the branch that triggered the workflow
-          git checkout ${{ github.ref_name }}
-
+          # Checkout main branch (not the tag)
+          git checkout main
+          
+          # Copy generated release notes from detached HEAD
+          cp -f ../RELEASE_NOTES.md ./ || true
+          
           git add RELEASE_NOTES.md
           git commit -m "Add release notes for ${GITHUB_REF_NAME}" || echo "No changes to commit"
-          git push origin ${{ github.ref_name }}
+          git push origin main
