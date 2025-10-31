@@ -5,67 +5,35 @@ on:
     types: [published]
 
 jobs:
-  generate_notes:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: read
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          # Fetch full history so commits can be listed properly
-          fetch-depth: 0
+          fetch-depth: 0    # Important: fetch full history for pushing commits
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
       - name: Generate release notes
-        id: notes
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require("fs");
-
-            const { data: release } = await github.rest.repos.getReleaseByTag({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag: context.payload.release.tag_name
-            });
-
-            const { data: commits } = await github.rest.repos.listCommits({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha: context.payload.release.target_commitish
-            });
-
-            let notes = `## Release Notes for ${release.tag_name}\n\n`;
-            notes += `### New Features / Changes:\n`;
-
-            commits.slice(0, 10).forEach(c => {
-              notes += `- ${c.commit.message}\n`;
-            });
-
-            notes += `\nGenerated automatically by GitHub Actions.`;
-
-            fs.writeFileSync("RELEASE_NOTES.md", notes);
-            core.setOutput("notes", notes);
+        run: |
+          echo "## Release Notes for ${GITHUB_REF_NAME}" > RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "- Added new features and bug fixes." >> RELEASE_NOTES.md
+          echo "- Version: ${GITHUB_REF_NAME}" >> RELEASE_NOTES.md
 
       - name: Commit and push release notes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add RELEASE_NOTES.md
           
-          # Only commit if there are actual changes
-          if git diff --cached --quiet; then
-            echo "No changes to commit."
-          else
-            git commit -m "Add release notes for ${{ github.event.release.tag_name }}"
-            # Push explicitly to main to avoid detached HEAD issues
-            git push origin HEAD:main
-          fi
+          # Switch to the branch that triggered the workflow
+          git checkout ${{ github.ref_name }}
 
-      - name: Upload release notes as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-notes
-          path: RELEASE_NOTES.md
+          git add RELEASE_NOTES.md
+          git commit -m "Add release notes for ${GITHUB_REF_NAME}" || echo "No changes to commit"
+          git push origin ${{ github.ref_name }}
