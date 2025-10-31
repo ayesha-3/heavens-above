@@ -1,0 +1,39 @@
+name: Automated Dependency Updates (Custom)
+
+on:
+  schedule:
+    - cron: "0 3 * * 0"  # every Sunday at 3:00 AM UTC
+  workflow_dispatch:
+
+jobs:
+  update-dependencies:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install npm-check-updates
+        run: npm install -g npm-check-updates
+
+      - name: Check for updates and upgrade package.json
+        run: |
+          ncu -u
+          npm install
+
+      - name: Run tests to verify updates
+        run: npm test
+
+      - name: Commit and push changes
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "chore(deps): update npm dependencies"
+          title: "chore(deps): automated dependency updates"
+          body: "This PR updates project dependencies to their latest versions."
+          branch: "auto/dependency-updates"
+          base: "main"
